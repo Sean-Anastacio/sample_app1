@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  attr_accessor :remember_token
   before_save { self.email = email.downcase }
   validates :name, presence: true, length: { maximum: 50 }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -12,5 +13,35 @@ class User < ApplicationRecord
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
                                                   BCrypt::Engine.cost
     BCrypt::Password.create(string, cost: cost)
+  end
+
+  
+  def User.new_token #記憶トークンを生成する
+    SecureRandom.urlsafe_base64
+  end
+  
+  #永続化セッションのためにユーザーをデータベースに記憶する
+  def remember
+    self.remember_token = User.new_token #記憶トークンを生成する
+    update_attribute(:remember_digest, User.digest(remember_token)) #記憶トークンをハッシュ化したのち、テーブルのremember_digestを変更する
+    remember_digest
+  end
+  
+  def session_token
+    remember_digest||remember
+  end
+  
+  #渡されたトークンがダイジェストと一致したらtrueを返す
+  def authenticated?(remember_token)
+    return false if remember_digest.nil?
+    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  end
+  #remember_tokenはローカル変数であり、一方でremember_digestはdbのカラムに対応しているのでActive Recordで簡単に取得・保存できる。→O/Rマッピング、オブジェクトリレーショナルマッピング
+  #self.nameをname,self.emailをemailとして取り出せたのと同じ
+  #User < ApplicationRecord < ActiveRecord::Base < Object
+  
+  
+  def forget
+    update_attribute(:remember_digest, nil)
   end
 end
