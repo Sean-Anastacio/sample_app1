@@ -16,7 +16,7 @@
       <% flash.each do |message_type, message| %>
         <div class="alert alert-<%= message_type %>"><%= message %></div>
       <% end %>
-      <%= yield %>
+      <%= yield %> <!--Bodyのyield部分はURLに基づいて各ページのviewを表示している -->
       <%= render 'layouts/footer' %>
       <%= debug(params) if Rails.env.development? %>
     </div>

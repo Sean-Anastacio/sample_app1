@@ -7,7 +7,7 @@ class User < ApplicationRecord
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: true
   has_secure_password
-  validates :password, presence: true, length: { minimum: 6 }
+  validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
   
   def User.digest(string)
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
@@ -28,7 +28,7 @@ class User < ApplicationRecord
   end
   
   def session_token
-    remember_digest||remember
+    remember_digest || remember
   end
   
   #渡されたトークンがダイジェストと一致したらtrueを返す
