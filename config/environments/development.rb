@@ -67,6 +67,11 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+  config.action_mailer.raise_delivery_errors = false
+  
+  host = '1faec7379b0c492587404de102d34cce.vfs.cloud9.ap-northeast-1.amazonaws.com'
+  
+  config.action_mailer.default_url_options = { host: host, protocol: 'http' }
 
   # Cloud9 への接続を許可する
   config.hosts.clear
